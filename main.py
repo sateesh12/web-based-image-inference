@@ -134,7 +134,7 @@ url = st.text_input('Enter URL')
 # Give an option
 option = st.selectbox('What would you like to do?',
                     ('Face Detection, Object Identification'))
-st.write('You selected': option)
+st.write('You selected:', option)
 
 
 if img_file_buffer is not None:
