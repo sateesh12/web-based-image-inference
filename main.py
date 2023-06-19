@@ -29,7 +29,7 @@ st.title("Image classifier")
 def load_res10_model():
     modelFile = "res10_300x200_ssd_iter_140000_fp16.caffemodel"
     configFile = "deploy.prototxt"
-    net = cv2.dnn.readNetFromCaffee(configFile, modelFile)
+    net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
     return net
 
 
