@@ -141,7 +141,7 @@ if img_file_buffer is not None:
     # Read the image and convert into opencv
     image = np.array(Image.open(img_file_buffer))
     st.image(image)
-    if(option == 'Object Detection'):
+    if(option == 'Object Identification'):
         # Call the DNN model on the image
         detections = classify(net,image, class_names)
         header(detections)
