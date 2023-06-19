@@ -19,7 +19,7 @@ import base64
 #OK print('All imports completed')
 
 #Give the application a name 
-st.title("Image classifier")
+st.title("Image classifier using DenseNet 121, Face recognition using ResNet and Text recognition using EAST")
 
 
 #Method  : load_res10_model
@@ -155,24 +155,24 @@ def process_detection(frame, detections, conf_threshold = 0.5):
 # Main starts here
 img_file_buffer = st.file_uploader("Choose a file or camera", type=['jpg','jpeg','png'])
 st.text('OR')
-url = st.text_input('Enter URL')
+url = st.text_input('Enter URL only for Image classification.')
 
 # Give an option
 option = st.selectbox('What would you like to do?',
-                    ('Face Detection', 'Object Identification'))
+                    ('Face Detection', 'Object Identification','Text Detection'))
 st.write('You selected:', option)
 
 
 if img_file_buffer is not None:
     # Read the image and convert into opencv
+    image = np.array(Image.open(img_file_buffer))
     if(option == 'Object Identification'):
         # Call the DNN model on the image
-        image = np.array(Image.open(img_file_buffer))
         net, class_names = load_densenet_121()
         detections = classify(net,image, class_names)
         st.image(image)
         header(detections)
-    else:
+    if(option == 'Face Detection'):
         # Now detections code
         raw_bytes = np.asarray(bytearray(img_file_buffer.read()),dtype=np.uint8)
         image = cv2.imdecode(raw_bytes, cv2.IMREAD_COLOR)
@@ -188,7 +188,24 @@ if img_file_buffer is not None:
         # Now the image with BB
         placeholders[1].image(out_image,channels='BGR')
         placeholders[1].text("Output Image")
-
+    if(option == 'Text Detection'):
+        net = cv2.dnn_TextDetectionModel_EAST('frozen_east_text_detection.pb')
+        conf_thresh = 0.8
+        nms_thresh  = 0.4
+        inputSize = (320,320)
+        net.setConfidenceThreshold(conf_thresh).setNMSThreshold(nms_thresh)
+        net.setInputParams(1.0,inputSize,(123.68,116.78,103.94), True)
+        placeholders = st.columns(2)
+        # Show first image as is
+        placeholders[0].image(image, channels = 'RGB')
+        placeholders[0].text("Input image")
+        imEAST = image.copy()
+        boxesEAST , confsEAST = net.detect(image)
+        cv2.polylines(imEAST,boxesEAST, isClosed = True, color=(255,0,255), thickness=4)
+        # Now the image with BB
+        placeholders[1].image(imEAST,channels='RGB')
+        placeholders[1].text("Output Image")
+        cv2.imshow('Bounding Boxes for EAST',image)
 elif url != '':
     try:
         response = requests.get(url)
