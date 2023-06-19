@@ -133,7 +133,7 @@ url = st.text_input('Enter URL')
 
 # Give an option
 option = st.selectbox('What would you like to do?',
-                    ('Face Detection, Object Identification'))
+                    ('Face Detection', 'Object Identification'))
 st.write('You selected:', option)
 
 
