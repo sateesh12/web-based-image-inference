@@ -4,7 +4,8 @@
 #Requirements :
 # 1    The application must run on iOS
 # 2    The application must be hosted on Azure cloud
-# 3     The application should  be able to open camera to detect the image
+# 3    The application should  be able to open camera to detect the image
+# 4    The app must provide options for user to choose between image inference or face detection.
 
 from requests.models import MissingSchema
 import streamlit as st
@@ -13,11 +14,25 @@ import numpy as np
 from PIL import Image, UnidentifiedImageError
 import requests
 from io import BytesIO
+import base64
 
 #OK print('All imports completed')
 
 #Give the application a name 
 st.title("Image classifier")
+
+
+#Method  : load_res10_model
+#Purpose : Load Res Net model
+#Input   : None
+#Output  : the loaded model
+def load_res10_model():
+    modelFile = "res10_300x200_ssd_iter_140000_fp16.caffemodel"
+    configFile = "deploy.prototxt"
+    net = cv2.dnn.readNetFromCaffee(configFile, modelFile)
+    return net
+
+
 
 #    """Method : load_model. """
 #    """Purpose: Loads the DNN model DenseNet 121 which has been trained by Caffe."""
@@ -83,6 +98,10 @@ def classify(model, image, class_names):
     out_text = f"Class: {out_name}, Confidence: {final_prob:.1f}%"
     return out_text
 
+#Method  : Header
+#Purpose : Print the inteferred image along with % confidence
+#Input   : Data from the classify method
+#Output  : None
 def header(text):
      st.markdown(
              '<p style="background-color:#0066cc;color:#33ff33;font-size:24px;'
@@ -90,6 +109,20 @@ def header(text):
              unsafe_allow_html=True)
 
 
+#Method  : detect_face
+#Purpose : Annotate a face with a bounding box
+#Input   : DNN model,image 
+#Output  : detections
+def detect_face(net,image):
+    blob = cv2.dnn.blobFromImage(image,
+            1.0,
+            (300,300),
+            [104,117,123],
+            False,
+            False)
+    net.setInput(blob)
+    detections = net.forward()
+    return detections
 
 
 # Main starts here
@@ -97,6 +130,11 @@ net, class_names = load_densenet_121()
 img_file_buffer = st.file_uploader("Choose a file or camera", type=['jpg','jpeg','png'])
 st.text('OR')
 url = st.text_input('Enter URL')
+
+# Give an option
+option = st.selectbox('What would you like to do?',
+                    ('Face Detection, Object Identification'))
+st.write('You selected': option)
 
 
 if img_file_buffer is not None:
