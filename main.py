@@ -205,7 +205,6 @@ if img_file_buffer is not None:
         # Now the image with BB
         placeholders[1].image(imEAST,channels='RGB')
         placeholders[1].text("Output Image")
-        cv2.imshow('Bounding Boxes for EAST',image)
 elif url != '':
     try:
         response = requests.get(url)
