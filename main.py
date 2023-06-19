@@ -181,7 +181,7 @@ if img_file_buffer is not None:
         detections = detect_face(net,image)
         out_image, _ = process_detection(image, detections)
         placeholders[1].image(out_image,channels='BGR')
-        placehodlers[1].text("Output Image")
+        placeholders[1].text("Output Image")
 
 elif url != '':
     try:
