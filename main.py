@@ -141,10 +141,12 @@ if img_file_buffer is not None:
     # Read the image and convert into opencv
     image = np.array(Image.open(img_file_buffer))
     st.image(image)
-
-    # Call the DNN model on the image
-    detections = classify(net,image, class_names)
-    header(detections)
+    if(option == 'Object Detection'):
+        # Call the DNN model on the image
+        detections = classify(net,image, class_names)
+        header(detections)
+    else:
+        print("Choose face detection, code is to be deployed")
 
 elif url != '':
     try:
