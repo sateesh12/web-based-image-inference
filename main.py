@@ -125,8 +125,34 @@ def detect_face(net,image):
     return detections
 
 
+#Method : process_detection
+#Purpose: Draw the bouding box on face detections
+#Input  : 
+#       frame, the image on which bounding box needs to be drawn
+#       detections, actual detections as an array
+#       confidence, probability of an actual face.
+def process_detection(frame, detections, conf_threshold = 0.5):
+    bboxes = []
+    # Identify the size of the incoming image.
+    frame_h = frame.shape[0]
+    frame_w = frame.shape[1]
+
+    for i in range(detections.shape[2]):
+        confidence = detections[0,0,i,2]
+        if confidence > conf_threshold:
+            x1 = int(detections[0,0,i,3]*frame_w)
+            y1 = int(detections[0,0,i,4]*frame_h)
+            x2 = int(detections[0,0,i,5]*frame_w)
+            y2 = int(detections[0,0,i,6]*frame_h)
+            bbboxes.append([x1,y1,x2,y2])
+            bb_line_thickness = max(1,int(round(frame_h/200)))
+            # Now draw the box
+            cv2.rectangle((x1,y1),(x2,y2),(0,255,0),bb_line_thickness, cv2.LINE_8)
+    return frame,bboxes
+
+
+
 # Main starts here
-net, class_names = load_densenet_121()
 img_file_buffer = st.file_uploader("Choose a file or camera", type=['jpg','jpeg','png'])
 st.text('OR')
 url = st.text_input('Enter URL')
@@ -143,10 +169,19 @@ if img_file_buffer is not None:
     st.image(image)
     if(option == 'Object Identification'):
         # Call the DNN model on the image
+        net, class_names = load_densenet_121()
         detections = classify(net,image, class_names)
         header(detections)
     else:
-        print("Choose face detection, code is to be deployed")
+        # Now detections code
+        placeholders = st.columns(2)
+        placehodlers[0].image(image, channels = 'BGR')
+        placeholders[0].text("Input image")
+        net = load_res10_model()
+        detections = detect_face(net,image)
+        out_image, _ = process_detection(image, detections)
+        placeholders[1].image(out_image,channels='BGR')
+        placehodlers[1].text("Output Image")
 
 elif url != '':
     try:
