@@ -166,11 +166,11 @@ st.write('You selected:', option)
 if img_file_buffer is not None:
     # Read the image and convert into opencv
     image = np.array(Image.open(img_file_buffer))
-    st.image(image)
     if(option == 'Object Identification'):
         # Call the DNN model on the image
         net, class_names = load_densenet_121()
         detections = classify(net,image, class_names)
+        st.image(image)
         header(detections)
     else:
         # Now detections code
