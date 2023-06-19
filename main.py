@@ -165,21 +165,27 @@ st.write('You selected:', option)
 
 if img_file_buffer is not None:
     # Read the image and convert into opencv
-    image = np.array(Image.open(img_file_buffer))
     if(option == 'Object Identification'):
         # Call the DNN model on the image
+        image = np.array(Image.open(img_file_buffer))
         net, class_names = load_densenet_121()
         detections = classify(net,image, class_names)
         st.image(image)
         header(detections)
     else:
         # Now detections code
+        raw_bytes = np.asarray(bytearray(img_file_buffer.read()),dtype=np.uint8)
+        image = cv2.imdecode(raw_bytes, cv2.IMREAD_COLOR)
         placeholders = st.columns(2)
+
+        # Show first image as is
         placehodlers[0].image(image, channels = 'BGR')
         placeholders[0].text("Input image")
         net = load_res10_model()
         detections = detect_face(net,image)
         out_image, _ = process_detection(image, detections)
+
+        # Now the image with BB
         placeholders[1].image(out_image,channels='BGR')
         placeholders[1].text("Output Image")
 
