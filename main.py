@@ -147,7 +147,16 @@ def process_detection(frame, detections, conf_threshold = 0.5):
             bboxes.append([x1,y1,x2,y2])
             bb_line_thickness = max(1,int(round(frame_h/200)))
             # Now draw the box
-            cv2.rectangle(frame,(x1,y1),(x2,y2),(0,255,0),bb_line_thickness, cv2.LINE_8)
+            cv2.rectangle(frame,(x1,y1),(x2,y2), (0,255,0),8)
+            label = 'Confidence: %.4f' % confidence
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            label_size,base_line = cv2.getTextSize(label,font,fontScale = 1.5,thickness = 4)
+            cv2.rectangle(frame,
+                    (x1,y1 - label_size[1]),
+                    (x1+label_size[0],y1 + base_line),
+                    (255,255,255),
+                    cv2.FILLED)
+            cv2.putText(frame,label,(x1,y1),font,1.5, (0,0,0))
     return frame,bboxes
 
 
