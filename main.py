@@ -167,6 +167,7 @@ if img_file_buffer is not None:
     # Read the image and convert into opencv
     image = np.array(Image.open(img_file_buffer))
     if(option == 'Object Identification'):
+        image = np.array(Image.open(img_file_buffer))
         # Call the DNN model on the image
         net, class_names = load_densenet_121()
         detections = classify(net,image, class_names)
@@ -189,6 +190,7 @@ if img_file_buffer is not None:
         placeholders[1].image(out_image,channels='BGR')
         placeholders[1].text("Output Image")
     if(option == 'Text Detection'):
+        image = np.array(Image.open(img_file_buffer))
         net = cv2.dnn_TextDetectionModel_EAST('frozen_east_text_detection.pb')
         conf_thresh = 0.8
         nms_thresh  = 0.4
