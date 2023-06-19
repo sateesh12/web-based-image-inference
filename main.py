@@ -144,7 +144,7 @@ def process_detection(frame, detections, conf_threshold = 0.5):
             y1 = int(detections[0,0,i,4]*frame_h)
             x2 = int(detections[0,0,i,5]*frame_w)
             y2 = int(detections[0,0,i,6]*frame_h)
-            bbboxes.append([x1,y1,x2,y2])
+            bboxes.append([x1,y1,x2,y2])
             bb_line_thickness = max(1,int(round(frame_h/200)))
             # Now draw the box
             cv2.rectangle((x1,y1),(x2,y2),(0,255,0),bb_line_thickness, cv2.LINE_8)
