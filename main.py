@@ -179,7 +179,7 @@ if img_file_buffer is not None:
         placeholders = st.columns(2)
 
         # Show first image as is
-        placehodlers[0].image(image, channels = 'BGR')
+        placeholders[0].image(image, channels = 'BGR')
         placeholders[0].text("Input image")
         net = load_res10_model()
         detections = detect_face(net,image)
