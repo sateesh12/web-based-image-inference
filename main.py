@@ -131,7 +131,8 @@ def detect_face(net,image):
 #       frame, the image on which bounding box needs to be drawn
 #       detections, actual detections as an array
 #       confidence, probability of an actual face.
-def process_detection(frame, detections, conf_threshold = 0.5):
+#       blur, True or False
+def process_detection(frame, detections, blur,conf_threshold = 0.5):
     bboxes = []
     # Identify the size of the incoming image.
     frame_h = frame.shape[0]
@@ -157,9 +158,40 @@ def process_detection(frame, detections, conf_threshold = 0.5):
                     (255,255,255),
                     cv2.FILLED)
             cv2.putText(frame,label,(x1,y1),font,1.5, (0,0,0))
+            if(blur == True):
+                (h,w) = frame.shape[:2]
+                box = detections[0,0,i,3:7]*np.array([w,h,w,h])
+                (x1,y1,x2,y2) = box.astype('int')
+                frame_temp = frame[y1:y2,x1:x2]
+                frame_temp = blur_face(frame_temp,1)
+                frame[y1:y2,x1:x2] = frame_temp
     return frame,bboxes
 
+#Method : For an imput image, simple blur the image and return a blurred copy
+#Input  : face_only  -> the input to blur
+#         factor -> how much blurring is needed
+#output : bluerred -> actual blurred image
+def blur_face(face_only,factor=3):
+    h, w = face_only.shape[:2]
 
+    if(factor < 1):
+        factor =1
+
+    if(factor > 5):
+        factor = 5
+
+    # New blurring kernel
+    w_k = int(w/factor)
+    h_k = int(h/factor)
+
+    # Make kernel an odd one
+    if(w_k%2 == 0):
+        w_k += 1
+    if(h_k%2 ==0):
+        h_k += 1
+
+    blurred = cv2.GaussianBlur(face_only,(int(w_k),int(h_k)),0,0)
+    return blurred
 
 # Main starts here
 img_file_buffer = st.file_uploader("Choose a file or camera", type=['jpg','jpeg','png'])
@@ -185,14 +217,14 @@ if img_file_buffer is not None:
         # Now detections code
         raw_bytes = np.asarray(bytearray(img_file_buffer.read()),dtype=np.uint8)
         image = cv2.imdecode(raw_bytes, cv2.IMREAD_COLOR)
-        placeholders = st.columns(2)
+        placeholders = st.columns(3)
 
         # Show first image as is
         placeholders[0].image(image, channels = 'BGR')
         placeholders[0].text("Input image")
         net = load_res10_model()
         detections = detect_face(net,image)
-        out_image, _ = process_detection(image, detections)
+        out_image, _ = process_detection(image, detections,False)
 
         # Now the image with BB
         placeholders[1].image(out_image,channels='BGR')
@@ -200,8 +232,18 @@ if img_file_buffer is not None:
         option2 = st.selectbox('What would you like blur the image for privacy?',
                     ('Yes','No'))
         st.write('You selected:', option2)
-
         #Start the blur code.
+        if(option2 == 'Yes'):
+            out_image, _ = process_detection(image, detections,True)
+            # Identify the area of the face and print it out
+            placeholders[2].image(out_image, channels='BGR')
+            placeholders[2].text("Blurred image")
+        else:
+            out_image, _ = process_detection(image, detections,False)
+            # Identify the area of the face and print it out
+            placeholders[2].image(out_image, channels='BGR')
+            placeholders[2].text("Un-Blurred image")
+
     if(option == 'Text Detection'):
         image = np.array(Image.open(img_file_buffer))
         image = np.array(Image.open(img_file_buffer))
