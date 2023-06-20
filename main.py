@@ -197,6 +197,11 @@ if img_file_buffer is not None:
         # Now the image with BB
         placeholders[1].image(out_image,channels='BGR')
         placeholders[1].text("Output Image")
+        option2 = st.selectbox('What would you like blur the image for privacy?',
+                    ('Yes','No'))
+        st.write('You selected:', option2)
+
+        #Start the blur code.
     if(option == 'Text Detection'):
         image = np.array(Image.open(img_file_buffer))
         image = np.array(Image.open(img_file_buffer))
