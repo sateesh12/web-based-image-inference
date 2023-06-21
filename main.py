@@ -312,7 +312,7 @@ def postprocess_object_detection(input_image, outputs):
 
 
 # Main starts here
-st.title("Image classifier using DenseNet 121, Face recognition using ResNet and Text recognition using EAST")
+st.title("Image classifier using DenseNet 121, Face recognition using ResNet and Text recognition using EAST, Object Detection using yolo v5")
 img_file_buffer = st.file_uploader("Choose a file or camera", type=['jpg','jpeg','png'])
 st.text('OR')
 url = st.text_input('Enter URL only for Image classification.')
