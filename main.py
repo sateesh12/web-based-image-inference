@@ -332,7 +332,7 @@ if img_file_buffer is not None:
         net = load_yolov5()
         obj_detections = preprocess_object_detection(image,net)
         out_image = postprocess_object_detection(image.copy(),obj_detections)
-        resized_image = cv2.resize(out_image,None,fx=0.4,fy=0.4)
+        resized_image = cv2.resize(out_image,None,fx=1,fy=1)
         st.image(resized_image)
     if(option == 'Image Inference'):
         image = np.array(Image.open(img_file_buffer))
